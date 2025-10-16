@@ -1,0 +1,260 @@
+/* General */
+:root {
+    --color-primary: #5c6ac4; /* StockSim violet/blue */
+    --color-text-dark: #374151;
+    --color-text-light: #6b7280;
+    --color-bg-light: #f9fafb;
+    --color-card-bg: #ffffff;
+    --color-border: #e5e7eb;
+    --color-positive: #10b981; /* Tailwind green-500 equivalent */
+    --color-negative: #ef4444;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--color-bg-light);
+    color: var(--color-text-dark);
+}
+
+.portfolio {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-card-bg);
+    border-bottom: 1px solid var(--color-border);
+    padding: 15px 40px;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--color-text-light);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 5px 0;
+    position: relative;
+}
+
+.nav-links a.active {
+    color: var(--color-text-dark);
+    font-weight: 600;
+}
+
+.nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -15px; /* Adjust based on navbar padding */
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-primary);
+}
+
+.user-icon-link {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    color: var(--color-text-dark) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    text-decoration: none !important;
+    margin-left: 20px;
+}
+
+/* Main Content */
+.main-content {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px;
+    flex: 1;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-dark);
+}
+
+.subtitle {
+    color: var(--color-text-light);
+    margin: 5px 0 30px;
+    font-size: 16px;
+}
+
+/* Top Metric Cards */
+.cards-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.metric-card .card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-light);
+}
+
+.metric-card .card-icon {
+    font-size: 18px;
+    color: var(--color-border); /* Grey icon color */
+}
+
+.metric-card .card-value {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: baseline;
+}
+
+.currency-symbol {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text-light);
+    margin-right: 5px;
+    position: relative;
+    top: -2px; /* Slight adjustment to align */
+}
+
+.big {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.card-subtitle {
+    font-size: 14px;
+    color: var(--color-text-light);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.positive {
+    color: var(--color-positive);
+}
+
+.negative {
+    color: var(--color-negative);
+}
+
+/* Bottom Panels */
+.bottom-panels {
+    /* Set the left panel (Allocation) to be much wider than the right (Actions) */
+    display: grid;
+    grid-template-columns: 2.5fr 1fr; /* 2.5 times wider for the allocation panel */
+    gap: 20px;
+}
+
+.panel {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.panel-title {
+    margin: 0 0 5px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-dark);
+}
+
+.panel-subtitle {
+    color: var(--color-text-light);
+    margin: 0 0 15px;
+    font-size: 14px;
+}
+
+/* Quick Actions Panel */
+.actions-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure it matches the height of the Allocation panel */
+}
+
+/* Buttons */
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px; /* Increased padding */
+    margin-top: 15px; /* Space between buttons/title */
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px; /* Slightly larger font */
+    font-weight: 600;
+    text-transform: capitalize; /* Ensure text matches screenshot */
+    transition: background-color 0.2s;
+}
+
+.btn.dark {
+    background: var(--color-primary);
+    color: white;
+}
+
+.btn.light {
+    background: var(--color-bg-light);
+    color: var(--color-text-dark);
+    border: 1px solid var(--color-border);
+}
+
+.btn.dark:hover {
+    background: #4a57b0;
+}
+
+.btn.light:hover {
+    background: #e5e7eb;
+}
+
+/* Placeholder for Chart */
+.chart-placeholder {
+    /* Style the placeholder area to keep the layout correct */
+    min-height: 250px;
+}

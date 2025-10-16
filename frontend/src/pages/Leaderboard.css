@@ -1,0 +1,149 @@
+/* Leaderboard.css */
+
+/* --- General & Layout --- */
+:root {
+  --primary-blue: #3264ff;
+  --text-dark: #333;
+  --text-light: #666;
+  --bg-light: #f8f9fb;
+  --border-light: #eee;
+  --card-bg: #fff;
+  --max-width: 1200px; /* Define max width for content */
+  --content-padding: 40px; /* Define standard side padding */
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-light);
+  margin: 0;
+  padding: 0;
+  color: var(--text-dark);
+}
+
+/* Container for the main content area (Header and Card) */
+.leaderboard-main-content {
+  max-width: var(--max-width);
+  margin: 0 auto; /* Center the content */
+  padding: 0 var(--content-padding); /* Apply padding to the sides */
+}
+
+/* --- Navigation Bar (Full Width) --- */
+.navbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 15px 25px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2d3e50;
+}
+
+.nav-links{
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #000;
+}
+
+.app-container header{
+  margin-bottom: 20px;
+}
+/* --- Page Header --- */
+.page-header {
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+}
+
+.page-header p {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+/* --- Leaderboard Card --- */
+.leaderboard-card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 30px;
+}
+
+.leaderboard-card .card-header {
+  margin-bottom: 20px;
+}
+
+.leaderboard-card .card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+}
+
+.leaderboard-card .card-header p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+/* --- Leaderboard Table --- */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table thead th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  padding: 12px 0;
+}
+
+.leaderboard-table tbody td {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.leaderboard-table tbody tr:last-child td {
+  border-bottom: none; /* Remove border from the last row */
+}
+
+/* Column Alignment and Widths */
+.th-rank, .td-rank {
+  width: 10%;
+}
+
+.th-trader, .td-trader {
+  width: 60%;
+}
+
+.th-value, .td-value {
+  width: 30%;
+  text-align: right; /* Align value to the right */
+  font-weight: 600; /* Value stands out */
+}
+
+.th-rank, .th-trader {
+  padding-left: 0;
+}

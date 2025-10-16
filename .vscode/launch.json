@@ -1,0 +1,34 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "MainApp",
+      "request": "launch",
+      "mainClass": "com.stocksim.backend.MainApp",
+      "projectName": "backend"
+    },
+    {
+      "type": "java",
+      "name": "Launch MainApp (Frontend)",
+      "request": "launch",
+      "mainClass": "com.stocksimclient.MainApp",
+      "projectName": "frontend",
+      "vmArgs": "--module-path \"C:\\Users\\LENOVO\\Downloads\\openjfx-24.0.2_windows-x64_bin-sdk\\javafx-sdk-24.0.2\\lib\" --add-modules javafx.controls,javafx.fxml"
+    },
+    {
+      "type": "java",
+      "name": "Launch AlphaVantageStockFetcher (Backend)",
+      "request": "launch",
+      "mainClass": "com.stocksim.backend.AlphaVantageStockFetcher",
+      "projectName": "backend"
+    },
+    {
+      "type": "java",
+      "name": "Launch StockMarketSimulator (Backend)",
+      "request": "launch",
+      "mainClass": "com.stocksim.backend.StockMarketSimulator",
+      "projectName": "backend"
+    }
+  ]
+}

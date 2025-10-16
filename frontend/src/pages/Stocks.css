@@ -1,0 +1,317 @@
+/* Basic Reset and Variables */
+:root {
+  --primary-blue: #007bff;
+  --text-dark: #333;
+  --text-light: #555;
+  --bg-light: #f4f6f9;
+  --card-bg: #fff;
+  --positive-green: #28a745;
+  --negative-red: #dc3545;
+  --border-color: #eee;
+  --sector-bg: #e9ecef;
+  --sector-text: #6c757d;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-light);
+}
+
+/* ---------------------------------- */
+/* Navigation Bar (No Change) */
+/* ---------------------------------- */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-light);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 5px 0;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--primary-blue);
+}
+
+.user-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  color: var(--text-dark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 16px !important;
+  text-decoration: none !important;
+}
+
+
+/* ---------------------------------- */
+/* Main Content and Hero (No Change) */
+/* ---------------------------------- */
+
+.main-content {
+  padding: 30px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.hero-section h2 {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 5px;
+}
+
+.hero-section p {
+  font-size: 16px;
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+/* ---------------------------------- */
+/* Filter Bar and Search */
+/* ---------------------------------- */
+
+.filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  max-width: 500px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.search-icon {
+  font-size: 16px;
+  color: var(--text-light);
+  margin-right: 10px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  width: 100%;
+}
+
+.filter-dropdowns {
+  display: flex;
+  gap: 10px;
+}
+.filter{
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+/* --- New Styles for Select Dropdowns --- */
+.dropdown-select {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  /*padding: 8px 15px;*/
+  border: none;
+  font-size: 14px;
+  color: var(--text-dark);
+  cursor: pointer;
+  
+  /* Remove default OS styling for a cleaner look */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* Add padding for the custom down arrow space if needed, though most browsers handle it */
+  padding-right: 30px; 
+
+  /* Custom arrow for a closer match to the screenshot's button arrow */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23555' d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.dropdown-select:hover {
+  background-color: var(--border-color);
+}
+/* ---------------------------------- */
+/* Stock Grid and Cards (No Change) */
+/* ---------------------------------- */
+
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stock-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 5px;
+}
+
+.symbol {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.sector-tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #fff;
+}
+
+/* Sector-specific colors */
+.sector-tag.technology {
+  background-color: #007bff;
+}
+.sector-tag.consumer-discretionary {
+  background-color: #6f42c1;
+}
+.sector-tag.healthcare {
+  background-color: #20c997;
+}
+
+.name {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 15px;
+}
+
+.price-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.change {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.change.positive {
+  color: var(--positive-green);
+}
+
+.change.negative {
+  color: var(--negative-red);
+}
+
+.metrics {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric .label {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 3px;
+}
+
+.metric .value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.buy-button, .view-chart-button {
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.buy-button {
+  flex-grow: 1;
+  background-color: var(--primary-blue);
+  color: #fff;
+  border: none;
+  font-weight: 500;
+}
+
+.view-chart-button {
+  flex-grow: 1;
+  background-color: transparent;
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+}
+
+.buy-button:hover, .view-chart-button:hover {
+  opacity: 0.9;
+}
