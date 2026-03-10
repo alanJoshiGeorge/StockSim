@@ -12,7 +12,6 @@ public class MainApp {
         SpringApplication.run(MainApp.class, args);
     }
 
-    // Global CORS configuration
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

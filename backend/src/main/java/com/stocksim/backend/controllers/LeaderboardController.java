@@ -28,7 +28,6 @@ public class LeaderboardController {
     @GetMapping("/leaderboard")
     public ResponseEntity<?> getLeaderboard() {
         try {
-            System.out.println("INSIDE LEADERBOARD");
             List<User> users = userRepository.findAll();
             List<Map<String, Object>> leaderboard = new ArrayList<>();
 
@@ -38,7 +37,6 @@ public class LeaderboardController {
                 System.out.println("USER:"+user);
                 // Fetch all trades of this user
                 List<Trade> trades = tradeRepository.findByUser(user);
-                System.out.println("TRADES:"+trades);
                 // Map to store net holdings per stock
                 Map<String, Integer> holdings = new HashMap<>();
                 for (Trade trade : trades) {
@@ -48,8 +46,7 @@ public class LeaderboardController {
                                 (trade.getTradeType().equals("BUY") ? trade.getQuantity() : -trade.getQuantity())
                     );
                 }
-                System.out.println("LEVEL 1 passed");
-                // Add current value of stocks
+                
                 for (Map.Entry<String, Integer> entry : holdings.entrySet()) {
                     String symbol = entry.getKey();
                     int quantity = entry.getValue();
@@ -61,7 +58,6 @@ public class LeaderboardController {
                         totalValue += currentPrice * quantity;
                     }
                 }
-                System.out.println("LEVEL 2 passed");
                 // Build leaderboard entry
                 Map<String, Object> userEntry = new HashMap<>();
                 userEntry.put("id", user.getId());

@@ -19,16 +19,13 @@ public class PortfolioController {
     @Autowired
     private UserRepository userRepository;
 
-    // Get full portfolio summary for a user
     @GetMapping("/{userId}")
     public ResponseEntity<?> getPortfolio(@PathVariable Long userId) {
-        // Find the user by ID
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return ResponseEntity.badRequest().body("User not found");
         }
 
-        // Pass the user object to service
         Map<String, Object> portfolio = portfolioService.getUserPortfolio(user);
         return ResponseEntity.ok(portfolio);
     }

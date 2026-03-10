@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Portfolio.css";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -27,6 +28,7 @@ const Portfolio = () => {
   const [holdings, setHoldings] = useState({});
   const [totalValue, setTotalValue] = useState(0);
   const [gainLoss, setGainLoss] = useState(0);
+  const navigate = useNavigate();
 
   // --- Fetch user balance ---
   const fetchBalance = async () => {
@@ -195,11 +197,11 @@ const Portfolio = () => {
           <div className="panel actions-panel">
             <h3 className="panel-title">Quick Actions</h3>
             <p className="panel-subtitle">Manage your portfolio</p>
-            <button className="btn dark action-btn">
+            <button className="btn dark action-btn" onClick={()=>navigate('/stocks')}>
               <span className="material-icons">+</span>
               Buy More Stocks
             </button>
-            <button className="btn light action-btn">
+            <button className="btn light action-btn" onClick={()=>navigate('/dashboard')}>
               <span className="material-icons">visibility</span>
               View Dashboard
             </button>

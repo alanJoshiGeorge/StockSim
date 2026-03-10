@@ -1,90 +1,100 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Popup from '../components/Popup';
 import './Stocks.css'; 
 
-const StockCard = ({ symbol, name, sector, price, change, volume, marketCap }) => {
+const StockCard = ({ symbol, name, sector, priceDisplay, price, change, volume, marketCap, onBuyClick }) => {
   const navigate = useNavigate();
-  return(
-  <div className="stock-card">
-    <div className="card-header">
-      <h3 className="symbol">{symbol}</h3>
-      <span className={`sector-tag ${sector.toLowerCase().replace(/\s/g, '-')}`}>{sector}</span>
-    </div>
-    <p className="name">{name}</p>
-    <div className="price-info">
-      <span className="price">{price}</span>
-      <span className={`change ${change.toString().includes('+') ? 'positive' : 'negative'}`}>
-        {change}
-      </span>
-    </div>
-    <div className="metrics">
-      <div className="metric">
-        <span className="label">Volume</span>
-        <span className="value">{volume}</span>
-      </div>
-      <div className="metric">
-        <span className="label">Market Cap</span>
-        <span className="value">{formatIndianNumber(marketCap)}</span>
-      </div>
-    </div>
-    <div className="card-actions">
-      <button className="buy-button">🛒 Buy Stock</button>
-      <button className="view-chart-button" onClick={()=>navigate(`/stock-chart/${symbol}`)}>View Chart</button>
-    </div>
-  </div>
-)};
 
+  return (
+    <div className="stock-card">
+      <div className="card-header">
+        <h3 className="symbol">{symbol}</h3>
+        <span className={`sector-tag ${sector.toLowerCase().replace(/\s/g, '-')}`}>{sector}</span>
+      </div>
+      <p className="name">{name}</p>
+      <div className="price-info">
+        {/* show formatted price */}
+        <span className="price">₹{priceDisplay}</span>
+        <span className={`change ${change.toString().includes('+') ? 'positive' : 'negative'}`}>
+          {change}
+        </span>
+      </div>
+      <div className="metrics">
+        <div className="metric">
+          <span className="label">Volume</span>
+          <span className="value">{volume}</span>
+        </div>
+        <div className="metric">
+          <span className="label">Market Cap</span>
+          <span className="value">{formatIndianNumber(marketCap)}</span>
+        </div>
+      </div>
+      <div className="card-actions">
+        {/* Use numeric price here */}
+        <button className="buy-button" onClick={() => onBuyClick(symbol, price)}>
+          🛒 Buy Stock
+        </button>
+        <button className="view-chart-button" onClick={() => navigate(`/stock-chart/${symbol}`)}>
+          View Chart
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --- Utility function for formatting numbers ---
 function formatIndianNumber(num) {
-  if (num === null || num === undefined) return "N/A";
-  if (num >= 1e7) return (num / 1e7).toFixed(2) + " Cr";
-  if (num >= 1e5) return (num / 1e5).toFixed(2) + " L";
-  if (num >= 1e3) return (num / 1e3).toFixed(2) + " K";
+  if (num === null || num === undefined) return 'N/A';
+  if (num >= 1e7) return (num / 1e7).toFixed(2) + ' Cr';
+  if (num >= 1e5) return (num / 1e5).toFixed(2) + ' L';
+  if (num >= 1e3) return (num / 1e3).toFixed(2) + ' K';
   return num.toString();
 }
 
 const StockMarketPage = () => {
   const [stocks, setStocks] = useState([]);
-  const [initialStocks, setInitialStocks] = useState([]); // keep initial list
+  const [initialStocks, setInitialStocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSector, setSelectedSector] = useState('all-sectors');
   const [sortOption, setSortOption] = useState('symbol-a-z');
 
-  // Load initial stocks
-  // Load initial stocks
-useEffect(() => {
-  fetch('http://localhost:8080/api/stocks')
-    .then(res => res.json())
-    .then((data) => {
-      console.log('Fetched stocks:', data);
-      if (!Array.isArray(data)) return setStocks([]); // safety
-      const formatted = data.map(stock => ({
-        ...stock,
-        price: Number(stock.price),
-        priceDisplay: `₹${stock.price.toFixed(2)}`,
-        change: `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}`,
-        volume: stock.volume,
-        marketCap: stock.marketCap
-      }));
-      setStocks(formatted);
-      setInitialStocks(formatted); // keep original copy
-      setLoading(false);
-    })
-    .catch((err) => {
-      console.error('Error fetching stocks:', err);
-      setLoading(false);
-    });
-}, []);
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState(0);
+  const userId = localStorage.getItem('id');
 
+  // --- Fetch all stocks ---
+  useEffect(() => {
+    fetch('http://localhost:8080/api/stocks')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!Array.isArray(data)) return setStocks([]);
+        const formatted = data.map((stock) => ({
+          ...stock,
+          price: Number(stock.price),
+          priceDisplay: stock.price.toFixed(2), // string for display
+          change: `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}`,
+          volume: stock.volume,
+          marketCap: stock.marketCap,
+        }));
+        setStocks(formatted);
+        setInitialStocks(formatted);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching stocks:', err);
+        setLoading(false);
+      });
+  }, []);
 
-
-  // Handle search input
+  // --- Search handler ---
   const handleSearch = async (e) => {
     const query = e.target.value;
     setSearchTerm(query);
 
     if (!query) {
-      // If empty, reset to initial stocks
       setStocks(initialStocks);
       return;
     }
@@ -93,40 +103,63 @@ useEffect(() => {
       const res = await fetch(`http://localhost:8080/api/stocks/search?query=${query}`);
       const data = await res.json();
       if (!data || Object.keys(data).length === 0) {
-        setStocks([]); // nothing found
+        setStocks([]);
       } else {
         const formatted = {
           ...data,
           price: Number(data.price),
-          priceDisplay: `₹${data.price}`,
-          change: `${data.change >= 0 ? '+' : ''}${data.change}`,
+          priceDisplay: Number(data.price).toFixed(2),
+          change: `${data.change >= 0 ? '+' : ''}${Number(data.change).toFixed(2)}`,
           volume: data.volume,
-          marketCap: data.marketCap
+          marketCap: data.marketCap,
         };
         setStocks([formatted]);
       }
     } catch (err) {
-      console.error("Search failed:", err);
+      console.error('Search failed:', err);
       setStocks([]);
     }
   };
 
-  // Filter and sort
+  // --- Filtering and sorting ---
   const filteredStocks = stocks
-    .filter(stock =>
-      (stock.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       stock.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (selectedSector === 'all-sectors' || stock.sector.toLowerCase() === selectedSector)
+    .filter(
+      (stock) =>
+        (stock.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          stock.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (selectedSector === 'all-sectors' || stock.sector.toLowerCase() === selectedSector)
     )
     .sort((a, b) => {
       switch (sortOption) {
-        case 'symbol-a-z': return a.symbol.localeCompare(b.symbol);
-        case 'symbol-z-a': return b.symbol.localeCompare(a.symbol);
-        case 'price-high-low': return b.price - a.price;
-        case 'price-low-high': return a.price - b.price;
-        default: return 0;
+        case 'symbol-a-z':
+          return a.symbol.localeCompare(b.symbol);
+        case 'symbol-z-a':
+          return b.symbol.localeCompare(a.symbol);
+        case 'price-high-low':
+          return b.price - a.price;
+        case 'price-low-high':
+          return a.price - b.price;
+        default:
+          return 0;
       }
     });
+
+  // --- Popup handlers ---
+  const handleBuyClick = (symbol, price) => {
+    setSelectedSymbol(symbol);
+    setSelectedPrice(price);
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSelectedSymbol('');
+    setSelectedPrice(0);
+  };
+
+  const handleTradeComplete = () => {
+    console.log('Trade completed!');
+  };
 
   return (
     <div className="stocksim-app">
@@ -146,8 +179,9 @@ useEffect(() => {
               onChange={handleSearch}
             />
           </div>
+
           <div className="filter-dropdowns">
-            <div className='filter'>
+            <div className="filter">
               <span className="material-icons">filter_list</span>
               <select
                 className="dropdown-select"
@@ -160,7 +194,8 @@ useEffect(() => {
                 <option value="healthcare">Healthcare</option>
               </select>
             </div>
-            <div className='filter'>
+
+            <div className="filter">
               <select
                 className="dropdown-select"
                 value={sortOption}
@@ -176,15 +211,34 @@ useEffect(() => {
         </section>
 
         <section className="stock-grid">
-          {loading ? <p>Loading stocks...</p> : filteredStocks.map(stock => (
-            <StockCard
-              key={stock.symbol}
-              {...stock}
-              price={stock.priceDisplay}
-            />
-          ))}
+          {loading ? (
+            <p>Loading stocks...</p>
+          ) : (
+            filteredStocks.map((stock) => (
+              <StockCard
+                key={stock.symbol}
+                {...stock}
+                priceDisplay={stock.priceDisplay} // string for UI
+                price={stock.price}               // numeric for popup
+                onBuyClick={handleBuyClick}
+              />
+            ))
+          )}
         </section>
       </main>
+
+      {/* Popup Component */}
+      {showPopup && (
+        <Popup
+          isOpen={showPopup}
+          symbol={selectedSymbol}
+          price={selectedPrice} // numeric!
+          type="BUY"
+          userId={userId}
+          onClose={handleClosePopup}
+          onTradeComplete={handleTradeComplete}
+        />
+      )}
     </div>
   );
 };

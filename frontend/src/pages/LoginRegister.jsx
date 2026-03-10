@@ -10,10 +10,15 @@ const LoginRegister = () => {
     password: "",
     confirmPassword: ""
   });
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage("");
+    if (!formData.email || !formData.password){
+      return alert("Please fill all fields");
+    }
     try {
       const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
@@ -28,6 +33,7 @@ const LoginRegister = () => {
         navigate('/dashboard');
       } else {
         const error = await response.text();
+        setMessage("Invalid username or password")
       }
     } catch (err) {
       console.error('Error:', err);
@@ -37,6 +43,14 @@ const LoginRegister = () => {
 
     const handleRegister = async (e) => {
       e.preventDefault();
+      setMessage("");
+      if (formData.password !== formData.confirmPassword) {
+        return setMessage("Passwords do not match");
+      }
+      if (!formData.username || !formData.email || !formData.password){
+        setMessage("Please fill all fields");
+        return;
+      }
       try{
         const response = await fetch('http://localhost:8080/api/register', {
           method: 'POST',
@@ -67,13 +81,13 @@ const LoginRegister = () => {
         <div className="toggle-buttons">
           <button
             className={isLogin ? "active" : ""}
-            onClick={() => setIsLogin(true)}
+            onClick={() => {setIsLogin(true); setMessage("");}}
           >
             Login
           </button>
           <button
             className={!isLogin ? "active" : ""}
-            onClick={() => setIsLogin(false)}
+            onClick={() => {setIsLogin(false); setMessage("");}}
           >
             Register
           </button>
@@ -104,6 +118,7 @@ const LoginRegister = () => {
                 }
               />
             </div>
+            {message && <p className="message">{message}</p>}
             <button type="submit" onClick={handleLogin}>Sign In</button>
           </form>
         ) : (
@@ -153,6 +168,7 @@ const LoginRegister = () => {
                 }
               />
             </div>
+            {message && <p className="message">{message}</p>}
             <button type="submit" onClick={handleRegister}>Register</button>
           </form>
         )}

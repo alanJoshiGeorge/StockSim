@@ -6,7 +6,24 @@ const Dashboard = () => {
   const [trendingStocks, setTrendingStocks] = useState([]);
   const [gainingSectors, setGainingSectors] = useState([]);
   const [losingSectors, setLosingSectors] = useState([]);
+  const [indianIndices, setIndianIndices] = useState([]);
+  const [marketOverview, setMarketOverview] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMarketOverview = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/stocks/market/overview");
+        const data = await res.json();
+        console.log("Fetched Market Overview:", data);
+        setMarketOverview(data);
+      } catch (err) {
+        console.error("Failed to fetch market overview:", err);
+      }
+    };
+
+    fetchMarketOverview();
+  }, []);
 
   useEffect(() => {
     const fetchTrending = async () => {
@@ -32,20 +49,30 @@ const Dashboard = () => {
       }
     };
 
+    const fetchIndianIndices = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/stocks/indices"); // your API endpoint
+        const data = await res.json();
+        console.log("Fetched Indian indices:", data);
+        setIndianIndices(data); // assuming data is an array of objects like { name, value, change }
+      } catch (err) {
+        console.error("Failed to fetch Indian indices:", err);
+      }
+    };
+
     fetchTrending();
     fetchTrendingSectors();
+    fetchIndianIndices();
   }, []);
 
   return (
     <div className="dashboard">
-      {/* Main Content */}
       <main className="main-content">
         <h1>Welcome back, User!</h1>
         <p className="subtitle">Here's your trading overview</p>
 
-        {/* Top Row: Trending Stocks + Sector Cards */}
         <div className="cards-row">
-          {/* Trending Stocks Panel */}
+          {/* Trending Stocks */}
           <div className="card trending-card">
             <h3>Trending Stocks</h3>
             {trendingStocks.length === 0 ? (
@@ -91,24 +118,34 @@ const Dashboard = () => {
               <ul>
                 {losingSectors.map((sector, idx) => (
                   <li key={idx}>
-                    {sector.name}: <span className="negative">{sector.avgChange.toFixed(2)}%</span>
+                    {sector.name} <span className="negative">{sector.avgChange.toFixed(2)}%</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          {/* Today's Change */}
+          {/* Indian Indices */}
           <div className="card">
-            <h3>Today's Change</h3>
-            <p className="big positive">+$0.00</p>
-            <span>+0.00%</span>
+            <h3>Indian Indices</h3>
+            {indianIndices.length === 0 ? (
+              <p>Loading indices...</p>
+            ) : (
+              <ul>
+                {indianIndices.map((index, idx) => (
+                  <li key={idx}>
+                    <span>{index.name}</span>
+                    <span className={index.change >= 0 ? "positive" : "negative"}>
+                      {index.change >= 0 ? "+" : ""}{index.change.toFixed(2)}%
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 
-        {/* Bottom Panels */}
         <div className="bottom-panels">
-          {/* Quick Actions */}
           <div className="panel">
             <h3>Quick Actions</h3>
             <button className="btn dark" onClick={()=>navigate('/stocks')}>
@@ -121,24 +158,24 @@ const Dashboard = () => {
             </button>
           </div>
 
-          {/* Market Overview */}
           <div className="panel">
             <h3>Market Overview</h3>
-            <ul className="market-list">
-              <li>
-                <span>S&amp;P 500</span>
-                <span className="positive">4,500.00 (+1.2%)</span>
-              </li>
-              <li>
-                <span>NASDAQ</span>
-                <span className="negative">14,200.00 (-0.5%)</span>
-              </li>
-              <li>
-                <span>DOW</span>
-                <span className="positive">35,800.00 (+0.8%)</span>
-              </li>
-            </ul>
+            {marketOverview.length === 0 ? (
+              <p>Loading...</p>
+            ) : (
+              <ul className="market-list">
+                {marketOverview.map((index, idx) => (
+                  <li key={idx}>
+                    <span>{index.name}</span>
+                    <span className={index.change >= 0 ? "positive" : "negative"}>
+                      {index.change >= 0 ? "+" : ""}{index.change.toFixed(2)}%
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
+
         </div>
       </main>
     </div>

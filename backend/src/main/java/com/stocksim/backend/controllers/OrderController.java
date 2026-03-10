@@ -1,7 +1,9 @@
 package com.stocksim.backend.controllers;
 
+import com.stocksim.backend.model.Order;
 import com.stocksim.backend.model.Trade;
 import com.stocksim.backend.model.User;
+import com.stocksim.backend.repositories.OrderRepository;
 import com.stocksim.backend.repositories.TradeRepository;
 import com.stocksim.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +13,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/trades")
-@CrossOrigin(origins = "http://localhost:5173") // allow React frontend
-public class TradeController {
-
-    @Autowired
-    private TradeRepository tradeRepository;
+@RequestMapping("/api/trades") // Keep same endpoints for frontend
+@CrossOrigin(origins = "http://localhost:5173")
+public class OrderController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private TradeRepository tradeRepository;
 
     // --- BUY STOCK ---
     @PostMapping("/buy")
@@ -31,16 +36,26 @@ public class TradeController {
             double price = Double.parseDouble(request.get("price").toString());
 
             User user = userRepository.findById(userId).orElse(null);
-            if (user == null) {
-                return ResponseEntity.badRequest().body("User not found");
-            }
+            if (user == null) return ResponseEntity.badRequest().body("User not found");
+
+            // Create Order
+            Order order = new Order();
+            order.setUser(user);
+            order.setStockSymbol(symbol);
+            order.setQuantity(quantity);
+            order.setPrice(price);
+            order.setType("BUY");
+            order.setStatus("PENDING");
+            orderRepository.save(order);
 
             double totalCost = price * quantity;
             if (user.getBalance() < totalCost) {
+                order.setStatus("CANCELLED");
+                orderRepository.save(order);
                 return ResponseEntity.badRequest().body("Insufficient balance");
             }
 
-            // Create trade
+            // Execute trade
             Trade trade = new Trade();
             trade.setUser(user);
             trade.setStockSymbol(symbol);
@@ -49,9 +64,13 @@ public class TradeController {
             trade.setTradeType("BUY");
             tradeRepository.save(trade);
 
-            // Deduct balance
+            // Deduct user balance
             user.setBalance(user.getBalance() - totalCost);
             userRepository.save(user);
+
+            // Update order status
+            order.setStatus("EXECUTED");
+            orderRepository.save(order);
 
             return ResponseEntity.ok("Stock bought successfully!");
         } catch (Exception e) {
@@ -69,18 +88,28 @@ public class TradeController {
             double price = Double.parseDouble(request.get("price").toString());
 
             User user = userRepository.findById(userId).orElse(null);
-            if (user == null) {
-                return ResponseEntity.badRequest().body("User not found");
-            }
+            if (user == null) return ResponseEntity.badRequest().body("User not found");
+
+            // Create Order
+            Order order = new Order();
+            order.setUser(user);
+            order.setStockSymbol(symbol);
+            order.setQuantity(quantity);
+            order.setPrice(price);
+            order.setType("SELL");
+            order.setStatus("PENDING");
+            orderRepository.save(order);
 
             // Check current holdings
             Integer netQuantity = tradeRepository.getNetQuantity(userId, symbol);
             if (netQuantity == null) netQuantity = 0;
             if (netQuantity < quantity) {
+                order.setStatus("CANCELLED");
+                orderRepository.save(order);
                 return ResponseEntity.badRequest().body("Insufficient shares to sell");
             }
 
-            // Create trade
+            // Execute trade
             Trade trade = new Trade();
             trade.setUser(user);
             trade.setStockSymbol(symbol);
@@ -89,9 +118,13 @@ public class TradeController {
             trade.setTradeType("SELL");
             tradeRepository.save(trade);
 
-            // Add balance
+            // Add user balance
             user.setBalance(user.getBalance() + price * quantity);
             userRepository.save(user);
+
+            // Update order status
+            order.setStatus("EXECUTED");
+            orderRepository.save(order);
 
             return ResponseEntity.ok("Stock sold successfully!");
         } catch (Exception e) {
@@ -99,7 +132,7 @@ public class TradeController {
         }
     }
 
-    // --- GET ALL TRADES FOR A USER ---
+    // --- GET USER TRADES ---
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getUserTrades(@PathVariable Long userId) {
         try {

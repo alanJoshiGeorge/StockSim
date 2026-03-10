@@ -50,4 +50,15 @@ public class StockController {
         return stockService.getTrendingSectors();
     }
 
+    @GetMapping("/indices")
+    public List<Map<String, Object>> getIndianIndices() {
+        return stockService.getIndianIndices();
+    }
+
+    @GetMapping("/market/overview")
+    public List<Map<String, Object>> getMarketOverview() {
+        return stockService.getMarketOverview();
+}
+
+
 }

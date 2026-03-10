@@ -3,12 +3,6 @@ package com.stocksim.backend.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,7 +75,6 @@ public class StockService {
             if (!symbol.endsWith(".NS")) symbol += ".NS";
             String url = FASTAPI_BASE + "/ticker/" + symbol + "/info";
             Map<String, Object> data = restTemplate.getForObject(url, Map.class);
-            System.out.println(data+"Data");
             if (data == null || !data.containsKey("currentPrice")) return Collections.emptyMap();
 
             Map<String, Object> stock = new LinkedHashMap<>();
@@ -101,50 +94,36 @@ public class StockService {
       
     public List<Map<String, Object>> getStockHistory(String symbol, String period, String interval) {
     try {
-        // --- Determine interval if not provided ---
-        if (interval == null || interval.isEmpty()) {
-            switch (period) {
-                case "1d":  interval = "1m"; break;
-                case "7d":  interval = "15m"; break;
-                case "1mo": interval = "1h"; break;
-                case "1y":  interval = "1d"; break;
-                default:    interval = "1d"; break;
-            }
-        }
-
-        // --- Fetch raw data ---
+        // Build the external API URL
         String url = FASTAPI_BASE + "/ticker/" + symbol + "/history?period=" + period + "&interval=" + interval;
         List<Map<String, Object>> rawData = restTemplate.getForObject(url, List.class);
-        if (rawData == null) return new ArrayList<>();
 
-        ZoneId zone = ZoneId.of("Asia/Kolkata");
-        LocalTime marketOpen = LocalTime.of(9, 15);
-        LocalTime marketClose = LocalTime.of(15, 30);
+        if (rawData == null || rawData.isEmpty()) {
+            System.out.println("⚠️ No data received from external API for " + symbol);
+            return new ArrayList<>();
+        }
 
+        // Convert timestamps to ISO-8601 and map required fields
         List<Map<String, Object>> history = rawData.stream()
             .map(entry -> {
                 Map<String, Object> candle = new HashMap<>();
-                // ✅ Correct ISO-8601 with IST offset
-                candle.put("Datetime", entry.get("Datetime").toString().replace(" ", "T") + "+05:30");
-                candle.put("Open", entry.get("Open"));
-                candle.put("High", entry.get("High"));
-                candle.put("Low", entry.get("Low"));
-                candle.put("Close", entry.get("Close"));
-                candle.put("Volume", entry.get("Volume"));
+                try {
+                    String rawTime = entry.get("Datetime").toString().trim();
+                    // Convert "2025-10-17 10:30:00" → "2025-10-17T10:30:00"
+                    String formattedTime = rawTime.replace(" ", "T");
+
+                    candle.put("Datetime", formattedTime);
+                    candle.put("Open", entry.get("Open"));
+                    candle.put("High", entry.get("High"));
+                    candle.put("Low", entry.get("Low"));
+                    candle.put("Close", entry.get("Close"));
+                    candle.put("Volume", entry.get("Volume"));
+                } catch (Exception e) {
+                    System.err.println("⚠️ Failed to process entry: " + e.getMessage());
+                }
                 return candle;
             })
-            .filter(candle -> {
-                try {
-                    ZonedDateTime dt = ZonedDateTime.parse(candle.get("Datetime").toString());
-                    DayOfWeek day = dt.getDayOfWeek();
-                    LocalTime time = dt.toLocalTime();
-                    return day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY
-                           && !time.isBefore(marketOpen) && !time.isAfter(marketClose);
-                } catch (Exception e) {
-                    return false;
-                }
-            })
-            .sorted(Comparator.comparing(c -> ZonedDateTime.parse(c.get("Datetime").toString())))
+            .filter(candle -> candle.get("Datetime") != null) 
             .collect(Collectors.toList());
 
         return history;
@@ -154,8 +133,6 @@ public class StockService {
         return new ArrayList<>();
     }
 }
-    
-    
 
     public List<Map<String, Object>> getTrendingStocks() {
         List<Map<String, Object>> trending = new ArrayList<>();
@@ -165,7 +142,6 @@ public class StockService {
             try {
                 String url = FASTAPI_BASE + "/ticker/" + symbol + "/info";
                 Map<String, Object> data = restTemplate.getForObject(url, Map.class);
-                System.out.println("API Response for " + symbol + ": " + data);
 
                 if (data != null) {
                     Map<String, Object> stock = new LinkedHashMap<>();
@@ -245,4 +221,97 @@ public class StockService {
         return result;
     }
 
-};
+
+
+public List<Map<String, Object>> getIndianIndices() {
+    // Map of ticker -> display name
+    Map<String, String> indices = new LinkedHashMap<>();
+    indices.put("^NSEI", "Nifty 50");
+    indices.put("^CNXIT", "Nifty IT");
+    indices.put("^NSEBANK", "Nifty Bank");
+    indices.put("^BSESN", "Sensex");
+
+    List<Map<String, Object>> result = new ArrayList<>();
+
+    for (Map.Entry<String, String> entry : indices.entrySet()) {
+        String ticker = entry.getKey();
+        String displayName = entry.getValue();
+
+        try {
+            String url = FASTAPI_BASE + "/ticker/" + ticker + "/info";
+            Map<String, Object> data = restTemplate.getForObject(url, Map.class);
+            System.out.println("API Response for index " + ticker + ": " + data);
+
+            if (data != null) {
+                Map<String, Object> index = new LinkedHashMap<>();
+                index.put("name", displayName); // friendly name for frontend
+                
+                Object valueObj = data.get("currentPrice"); // Yahoo Finance field for current index value
+                double value = 0;
+                if (valueObj instanceof Number) {
+                    value = ((Number) valueObj).doubleValue();
+                }
+                index.put("value", value);
+
+                Object changeObj = data.getOrDefault("regularMarketChangePercent", 0);
+                double change = 0;
+                if (changeObj instanceof Number) {
+                    change = ((Number) changeObj).doubleValue();
+                }
+                index.put("change", change);
+
+                result.add(index);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to fetch index " + ticker + ": " + e.getMessage());
+        }
+    }
+
+    return result;
+}
+    public List<Map<String, Object>> getMarketOverview() {
+    Map<String, String> indices = new LinkedHashMap<>();
+    indices.put("^GSPC", "S&P 500"); 
+    indices.put("^IXIC", "NASDAQ");  
+    indices.put("^DJI", "DOW");      
+
+    List<Map<String, Object>> result = new ArrayList<>();
+
+    for (Map.Entry<String, String> entry : indices.entrySet()) {
+        String ticker = entry.getKey();
+        String displayName = entry.getValue();
+
+        try {
+            String url = FASTAPI_BASE + "/ticker/" + ticker + "/info";
+            Map<String, Object> data = restTemplate.getForObject(url, Map.class);
+
+            if (data != null) {
+                Map<String, Object> index = new LinkedHashMap<>();
+                index.put("name", displayName);
+
+                Object valueObj = data.get("currentPrice");
+                double value = 0;
+                if (valueObj instanceof Number) {
+                    value = ((Number) valueObj).doubleValue();
+                }
+                index.put("value", value);
+
+                Object changeObj = data.getOrDefault("regularMarketChangePercent", 0);
+                double change = 0;
+                if (changeObj instanceof Number) {
+                    change = ((Number) changeObj).doubleValue();
+                }
+                index.put("change", change);
+
+                result.add(index);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to fetch index " + ticker + ": " + e.getMessage());
+        }
+    }
+
+    return result;
+}
+
+
+}
