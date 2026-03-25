@@ -23,6 +23,7 @@ const Navbar = () => {
         <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>Dashboard</NavLink>
         <NavLink to="/stocks" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>Stocks</NavLink>
         <NavLink to="/portfolio" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>Portfolio</NavLink>
+        <NavLink to="/watchlist" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>Watchlist</NavLink>
         <NavLink to="/leaderboard" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>Leaderboard</NavLink>
 
         {/* Account dropdown */}

@@ -31,10 +31,10 @@ const StockChart = () => {
   const [holding, setHolding] = useState('No position');
   const [showPopup, setShowPopup] = useState(false);
   const [tradeType, setTradeType] = useState(null);
+  const [addedToWatchlist, setAddedToWatchlist] = useState(false);
   const symbol = useParams().symbol;
   const userId = localStorage.getItem('id');
 
-  // --- Fetch user balance ---
   const fetchBalance = async () => {
     try {
       const res = await fetch(`http://localhost:8080/api/user/${userId}/balance`);
@@ -45,7 +45,6 @@ const StockChart = () => {
     }
   };
 
-  // --- Fetch user's holdings ---
   const fetchHolding = async () => {
     try {
       const res = await fetch(`http://localhost:8080/api/trades/user/${userId}`);
@@ -88,7 +87,6 @@ const StockChart = () => {
     fetchData();
   }, [timeframe, symbol]);
 
-  // --- Render Chart ---
   useEffect(() => {
     if (!chartRef.current || !stockData.length) return;
     const ctx = chartRef.current.getContext('2d');
@@ -176,13 +174,33 @@ const StockChart = () => {
     setTradeType(null);
   };
 
+  const addToWatchlist = (symbol) => {
+  fetch("http://localhost:8080/api/watchlist/add-stock", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: userId,
+      symbol: symbol,
+    }),
+  })
+    .then((res) => res.text())
+    .then((data) => {
+      console.log(data);
+    })
+
+    setAddedToWatchlist(true);
+  };
+
   return (
     <div className="stock-chart-container">
-      <header className="chart-header">
+      <div className='chart-top'><header className="chart-header">
         <h1>{symbol}</h1>
         <p>Interactive line chart</p>
       </header>
-
+      <div className="watchlist-icon" onClick={addToWatchlist(symbol)}><span class="material-icons">bookmark_add</span></div>
+      </div>
       <div className="chart-controls">
         {['1D', '1W', '1M'].map((tf) => (
           <button

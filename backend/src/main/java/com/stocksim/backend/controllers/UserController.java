@@ -9,7 +9,7 @@ import com.stocksim.backend.repositories.UserRepository; // <-- your repo
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173") // allow React frontend
+@CrossOrigin(origins = "http://localhost:5173") 
 public class UserController {
 
     @Autowired

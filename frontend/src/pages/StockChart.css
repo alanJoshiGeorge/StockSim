@@ -78,6 +78,21 @@
   margin: 2rem 0;
 }
 
+.chart-top{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.watchlist-icon {
+  padding: 20px;
+}
+
+.watchlist-icon span{
+  font-size: 2rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
 .info-card {
   padding: 1rem;
   background-color: #f9fafb;

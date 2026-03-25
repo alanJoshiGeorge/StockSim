@@ -1,0 +1,119 @@
+.watchlist-container {
+  padding: 24px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Grid layout like Stocks page */
+.watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* Card styling */
+.watchlist-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+
+.watchlist-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #999;
+}
+
+.remove-btn:hover {
+  color: red;
+}
+
+/* Company name */
+.company-name {
+  font-size: 13px;
+  color: #777;
+  margin: 6px 0 10px;
+}
+
+/* Price */
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* Change */
+.change {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.positive {
+  color: green;
+}
+
+.negative {
+  color: red;
+}
+
+/* Buttons */
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.buy-btn {
+  flex: 1;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.buy-btn:hover {
+  background: #1e4ed8;
+}
+
+.chart-btn {
+  flex: 1;
+  background: #f3f4f6;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.chart-btn:hover {
+  background: #e5e7eb;
+}

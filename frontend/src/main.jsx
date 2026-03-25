@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Stocks from './pages/Stocks';
 import StockMarketPage from './pages/StockChart';
 import Portfolio from './pages/Portfolio';
+import Watchlist from './pages/Watchlist';
 import Leaderboard from './pages/LeaderBoard';
 import Layout from './components/Layout';
 
@@ -25,6 +26,7 @@ root.render(
           <Route path="/stocks" element={<Stocks />} />
           <Route path="/stock-chart/:symbol" element={<StockMarketPage />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
         </Route>
       </Routes>

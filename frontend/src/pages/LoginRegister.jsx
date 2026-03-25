@@ -11,7 +11,9 @@ const LoginRegister = () => {
     confirmPassword: ""
   });
   const [message, setMessage] = useState("");
-
+  const clearFields = () => {
+    setFormData({username: "", email: "", password: "", confirmPassword: ""});
+  }
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -39,7 +41,6 @@ const LoginRegister = () => {
       console.error('Error:', err);
     }
   };
-
 
     const handleRegister = async (e) => {
       e.preventDefault();
@@ -81,13 +82,13 @@ const LoginRegister = () => {
         <div className="toggle-buttons">
           <button
             className={isLogin ? "active" : ""}
-            onClick={() => {setIsLogin(true); setMessage("");}}
+            onClick={() => {setIsLogin(true); setMessage(""); clearFields();}}
           >
             Login
           </button>
           <button
             className={!isLogin ? "active" : ""}
-            onClick={() => {setIsLogin(false); setMessage("");}}
+            onClick={() => {setIsLogin(false); setMessage("");clearFields();}}
           >
             Register
           </button>
